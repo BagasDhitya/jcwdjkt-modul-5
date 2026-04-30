@@ -1,0 +1,22 @@
+{
+  "name": "My Blog App",
+  "short_name": "BlogApp",
+  "description": "Aplikasi blog Next.js dengan CSR & SSR",
+  "start_url": "/posts-ssr",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#111827",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/nextjs.jpg",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/nextjs.jpg",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
