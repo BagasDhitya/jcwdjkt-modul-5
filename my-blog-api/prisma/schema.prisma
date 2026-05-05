@@ -14,3 +14,18 @@ model Article {
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?
 }
+
+model User {
+  id        String    @id @default(uuid())
+  email     String    @unique
+  password  String
+  role      Role      @default(GUEST)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+}
+
+enum Role {
+  GUEST
+  VIP
+}

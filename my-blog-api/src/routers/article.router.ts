@@ -6,13 +6,22 @@ import {
   updateArticleController,
   deleteArticleController,
 } from "../controllers/article.controller";
+import { authenticate, authorize } from "../middlewares/auth.middleware";
 
 const router = express.Router();
 
-router.post("/", createArticleController);
+// PUBLIC
 router.get("/", getArticlesController);
 router.get("/:id", getArticleByIdController);
-router.put("/:id", updateArticleController);
-router.delete("/:id", deleteArticleController);
+
+// PROTECTED
+router.post("/", authenticate, authorize(["VIP"]), createArticleController);
+router.put("/:id", authenticate, authorize(["VIP"]), updateArticleController);
+router.delete(
+  "/:id",
+  authenticate,
+  authorize(["VIP"]),
+  deleteArticleController,
+);
 
 export default router;

@@ -2,6 +2,7 @@ import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import articleRouter from "./routers/article.router";
+import authRouter from "./routers/auth.router";
 
 dotenv.config();
 
@@ -12,6 +13,7 @@ function createApp() {
   app.use(express.json());
 
   app.use("/api/articles", articleRouter);
+  app.use("/api/auth", authRouter);
 
   return app;
 }
