@@ -3,7 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { Auth } from "../types/auth";
-import { Role } from "@prisma/client";
+import { sendWelcomeEmail } from "./email.service";
 
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET || "secret";
@@ -11,13 +11,20 @@ const JWT_SECRET = process.env.JWT_SECRET || "secret";
 export async function registerUser(data: Auth) {
   const hashedPassword = await bcrypt.hash(data.password, 10);
 
-  return prisma.user.create({
+  const user = await prisma.user.create({
     data: {
       email: data.email,
       password: hashedPassword,
       role: data.role,
     },
   });
+
+  // kirim email setelah user berhasil dibuat di DB
+  try {
+    await sendWelcomeEmail(user.email);
+  } catch (error) {
+    console.error("Gagal kirim email : ", error);
+  }
 }
 
 export async function loginUser(data: Auth) {

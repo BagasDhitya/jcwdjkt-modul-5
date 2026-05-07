@@ -1,11 +1,24 @@
 import prisma from "../lib/prisma";
+import { uploadToCloudinary } from "./upload.service";
 
-export async function createArticle(data: {
-  title: string;
-  description: string;
-}) {
+export async function createArticle(
+  data: {
+    title: string;
+    description: string;
+  },
+  file: Express.Multer.File,
+) {
+  let posterUrl: any;
+
+  if (file) {
+    posterUrl = await uploadToCloudinary(file);
+  }
+
   return prisma.article.create({
-    data: data,
+    data: {
+      ...data,
+      poster: posterUrl,
+    },
   });
 }
 

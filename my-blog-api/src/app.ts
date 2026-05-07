@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import articleRouter from "./routers/article.router";
 import authRouter from "./routers/auth.router";
+import testRouter from "./routers/test.router";
 
 dotenv.config();
 
@@ -13,6 +14,7 @@ function createApp() {
   app.use(express.json());
 
   app.use("/api/articles", articleRouter);
+  app.use("/api/experimental", testRouter);
   app.use("/api/auth", authRouter);
 
   return app;

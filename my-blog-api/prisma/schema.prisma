@@ -10,6 +10,7 @@ model Article {
   id          String    @id @default(uuid())
   title       String
   description String
+  poster      String? // untuk nampung URL dari cloudinary
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
   deletedAt   DateTime?

@@ -9,7 +9,7 @@ import {
 
 export async function createArticleController(req: Request, res: Response) {
   try {
-    const result = await createArticle(req.body);
+    const result = await createArticle(req.body, req.file!);
     res.status(201).json(result);
   } catch (error) {
     res.status(500).json({ message: "Error create article", error });
