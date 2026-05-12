@@ -13,6 +13,10 @@ function createApp() {
   app.use(cors());
   app.use(express.json());
 
+  app.get("/api/health", (req, res) => {
+    res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
+  });
+
   app.use("/api/articles", articleRouter);
   app.use("/api/experimental", testRouter);
   app.use("/api/auth", authRouter);
