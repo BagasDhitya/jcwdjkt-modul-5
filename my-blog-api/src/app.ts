@@ -5,6 +5,9 @@ import articleRouter from "./routers/article.router";
 import authRouter from "./routers/auth.router";
 import testRouter from "./routers/test.router";
 
+import { errorMiddleware } from "./middlewares/error.middleware";
+import { loggerMiddleware } from "./middlewares/logger.middleware";
+
 dotenv.config();
 
 function createApp() {
@@ -12,6 +15,9 @@ function createApp() {
 
   app.use(cors());
   app.use(express.json());
+
+  app.use(loggerMiddleware);
+  app.use(errorMiddleware);
 
   app.get("/api/health", (req, res) => {
     res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });

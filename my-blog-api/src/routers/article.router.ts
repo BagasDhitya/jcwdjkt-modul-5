@@ -44,8 +44,8 @@ router.put(
 );
 router.delete(
   "/:id",
-  authenticate,
-  authorize(["VIP"]),
+  // authenticate,
+  // authorize(["VIP"]),
   deleteArticleController,
 );
 

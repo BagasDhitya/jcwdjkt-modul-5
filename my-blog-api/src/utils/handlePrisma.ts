@@ -1,0 +1,21 @@
+import { Prisma } from "@prisma/client";
+import { AppError } from "./error";
+
+export function handlePrismaError(error: unknown) {
+  if (error instanceof Prisma.PrismaClientKnownRequestError) {
+    switch (error.code) {
+      case "P2025":
+        throw new AppError("Article not found", 404);
+      case "P2002":
+        throw new AppError("Duplicate data", 400);
+      default:
+        throw new AppError("Database error", 500);
+    }
+  }
+
+  if (error instanceof Prisma.PrismaClientValidationError) {
+    throw new AppError("Invalid input data", 400);
+  }
+
+  throw new AppError("Internal server error", 500);
+}

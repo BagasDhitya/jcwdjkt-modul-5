@@ -1,5 +1,9 @@
 import prisma from "../lib/prisma";
 import { uploadToCloudinary } from "./upload.service";
+import redis from "../lib/redis";
+
+import { AppError } from "../utils/error";
+import { handlePrismaError } from "../utils/handlePrisma";
 
 export async function createArticle(
   data: {
@@ -8,55 +12,116 @@ export async function createArticle(
   },
   file: Express.Multer.File,
 ) {
-  let posterUrl: any;
+  try {
+    let posterUrl: any;
 
-  if (file) {
-    posterUrl = await uploadToCloudinary(file);
+    if (file) {
+      posterUrl = await uploadToCloudinary(file);
+    }
+
+    return prisma.article.create({
+      data: {
+        ...data,
+        poster: posterUrl,
+      },
+    });
+  } catch (error) {
+    handlePrismaError(error);
   }
-
-  return prisma.article.create({
-    data: {
-      ...data,
-      poster: posterUrl,
-    },
-  });
 }
 
 export async function getArticles() {
-  return prisma.article.findMany({
-    where: {
-      deletedAt: null,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+  try {
+    const cachedArticles = await redis.get("articles");
+
+    if (cachedArticles) {
+      return cachedArticles;
+    }
+
+    const articles = await prisma.article.findMany({
+      where: {
+        deletedAt: null,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
+
+    await redis.set("articles", JSON.stringify(articles), {
+      ex: 60,
+    });
+
+    return articles;
+  } catch (error) {
+    handlePrismaError(error);
+  }
 }
 
 export async function getArticleById(id: string) {
-  return prisma.article.findFirst({
-    where: {
-      id: id,
-      deletedAt: null,
-    },
-  });
+  try {
+    const cacheKey = `article:${id}`;
+    const cachedArticles = await redis.get(cacheKey);
+
+    if (cachedArticles) {
+      return cachedArticles;
+    }
+
+    const article = await prisma.article.findFirst({
+      where: {
+        id: id,
+        deletedAt: null,
+      },
+    });
+
+    if (!article) {
+      throw new AppError("Article not found", 404);
+    }
+
+    await redis.set(cacheKey, JSON.stringify(article), {
+      ex: 60,
+    });
+
+    return article;
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    handlePrismaError(error);
+  }
 }
 
 export async function updateArticle(
   id: string,
   data: { title?: string; description?: string },
 ) {
-  return prisma.article.update({
-    where: { id: id },
-    data: data,
-  });
+  try {
+    return prisma.article.update({
+      where: { id: id },
+      data: data,
+    });
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    handlePrismaError(error);
+  }
 }
 
 export async function deleteArticle(id: string) {
-  return prisma.article.update({
-    where: { id: id },
-    data: {
-      deletedAt: new Date(),
-    },
-  });
+  try {
+    return prisma.article.update({
+      where: { id: id },
+      data: {
+        deletedAt: new Date(),
+      },
+    });
+  } catch (error) {
+    if (error instanceof AppError) {
+      throw error;
+    }
+
+    handlePrismaError(error);
+  }
 }

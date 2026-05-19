@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { Request, Response, NextFunction } from "express";
 import {
   createArticle,
   getArticles,
@@ -7,47 +7,67 @@ import {
   deleteArticle,
 } from "../services/article.service";
 
-export async function createArticleController(req: Request, res: Response) {
+export async function createArticleController(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
   try {
     const result = await createArticle(req.body, req.file!);
     res.status(201).json(result);
   } catch (error) {
-    res.status(500).json({ message: "Error create article", error });
+    next(error);
   }
 }
 
-export async function getArticlesController(req: Request, res: Response) {
+export async function getArticlesController(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
   try {
     const result = await getArticles();
     res.json(result);
   } catch (error) {
-    res.status(500).json({ message: "Error get articles", error });
+    next(error);
   }
 }
 
-export async function getArticleByIdController(req: Request, res: Response) {
+export async function getArticleByIdController(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
   try {
     const result = await getArticleById(String(req.params.id));
     res.json(result);
   } catch (error) {
-    res.status(500).json({ message: "Error get article", error });
+    next(error);
   }
 }
 
-export async function updateArticleController(req: Request, res: Response) {
+export async function updateArticleController(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
   try {
     const result = await updateArticle(String(req.params.id), req.body);
     res.json(result);
   } catch (error) {
-    res.status(500).json({ message: "Error update article", error });
+    next(error);
   }
 }
 
-export async function deleteArticleController(req: Request, res: Response) {
+export async function deleteArticleController(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
   try {
     const result = await deleteArticle(String(req.params.id));
     res.json(result);
   } catch (error) {
-    res.status(500).json({ message: "Error delete article", error });
+    next(error);
   }
 }
