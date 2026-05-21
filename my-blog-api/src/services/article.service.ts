@@ -1,9 +1,13 @@
 import prisma from "../lib/prisma";
 import { uploadToCloudinary } from "./upload.service";
 import redis from "../lib/redis";
+import dotenv from "dotenv"
+import { qstash } from "../lib/queue";
 
 import { AppError } from "../utils/error";
 import { handlePrismaError } from "../utils/handlePrisma";
+
+dotenv.config()
 
 export async function createArticle(
   data: {
@@ -36,7 +40,7 @@ export async function createArticle(
     // Bandingkan waktu rilis dengan waktu lokal sekarang
     const isPublished = !publishDate || publishDate <= new Date();
 
-    return await prisma.article.create({
+    const newArticle =  await prisma.article.create({
       data: {
         title: data.title,
         description: data.description,
@@ -45,6 +49,21 @@ export async function createArticle(
         isPublished: isPublished
       },
     });
+
+    if(!isPublished && publishDate ){
+      const now = Date.now()
+      const targetDate =  publishDate.getTime()
+
+      const delayInSeconds = Math.max(0, Math.floor((targetDate - now) / 1000))
+
+      await qstash.publishJSON({
+        url: `${process.env.BACKEND_URL}/api/articles/webhook-publish`, // URL backend kamu yang akan ditembak QStash
+        body: { articleId: newArticle.id }, // Kirim ID artikel saja sebagai payload
+        delay: delayInSeconds, // QStash akan menahan pesan ini selama sekian detik
+      });
+      
+      console.log(`[QStash] Artikel dijadwalkan sukses. Delay: ${delayInSeconds} detik.`);
+    }
   } catch (error) {
     handlePrismaError(error);
   }

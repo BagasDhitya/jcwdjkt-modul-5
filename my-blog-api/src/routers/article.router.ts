@@ -5,6 +5,7 @@ import {
   getArticleByIdController,
   updateArticleController,
   deleteArticleController,
+  articlePublishWebhook
 } from "../controllers/article.controller";
 import { authenticate, authorize } from "../middlewares/auth.middleware";
 import { validate } from "../middlewares/validate.middleware";
@@ -26,6 +27,8 @@ router.get(
 );
 
 // PROTECTED
+router.post("/webhook-publish", articlePublishWebhook)
+
 router.post(
   "/",
   // authenticate,

@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import prisma from "../lib/prisma";
 import {
   createArticle,
   getArticles,
@@ -6,6 +7,30 @@ import {
   updateArticle,
   deleteArticle,
 } from "../services/article.service";
+
+export async function articlePublishWebhook(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { articleId } = req.body;
+
+    if (!articleId) {
+      return res.status(400).json({ error: "Missing articleId" });
+    }
+
+    // Update status artikel di database menjadi TRUE
+    const updatedArticle = await prisma.article.update({
+      where: { id: articleId },
+      data: { isPublished: true },
+    });
+
+    console.log(`[Webhook] Artikel "${updatedArticle.title}" Berhasil Dipublish otomatis oleh QStash!`);
+
+    // Beri respon sukses 200 ke QStash agar QStash tahu tugasnya selesai
+    return res.status(200).json({ success: true, message: "Article published successfully" });
+  } catch (error) {
+    console.error("[Webhook Error]:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+}
 
 export async function createArticleController(
   req: Request,
