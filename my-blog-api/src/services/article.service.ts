@@ -9,20 +9,40 @@ export async function createArticle(
   data: {
     title: string;
     description: string;
+    publishedAt?: string | Date;
   },
   file: Express.Multer.File,
 ) {
   try {
     let posterUrl: any;
-
     if (file) {
       posterUrl = await uploadToCloudinary(file);
     }
 
-    return prisma.article.create({
+    let publishDate: Date | null = null;
+
+    if (data.publishedAt) {
+      const dateStr = data.publishedAt.toString();
+      
+      // Jika frontend mengirim tanpa info timezone (misal: "2026-05-21 19:46:00")
+      // Kita paksa tempelkan '+07:00' agar JavaScript tahu ini adalah Waktu Indonesia Barat
+      if (!dateStr.includes('+') && !dateStr.endsWith('Z')) {
+        publishDate = new Date(`${dateStr.replace('T', ' ')} +07:00`);
+      } else {
+        publishDate = new Date(dateStr);
+      }
+    }
+
+    // Bandingkan waktu rilis dengan waktu lokal sekarang
+    const isPublished = !publishDate || publishDate <= new Date();
+
+    return await prisma.article.create({
       data: {
-        ...data,
+        title: data.title,
+        description: data.description,
         poster: posterUrl,
+        publishedAt: publishDate,
+        isPublished: isPublished
       },
     });
   } catch (error) {

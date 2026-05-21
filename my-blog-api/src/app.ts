@@ -7,6 +7,7 @@ import testRouter from "./routers/test.router";
 
 import { errorMiddleware } from "./middlewares/error.middleware";
 import { loggerMiddleware } from "./middlewares/logger.middleware";
+import { startArticleScheduler } from "./utils/scheduler/article.scheduler";
 
 dotenv.config();
 
@@ -33,6 +34,8 @@ function createApp() {
 function startServer() {
   const app = createApp();
   const PORT = process.env.PORT || 5000;
+
+  startArticleScheduler()
 
   app.listen(PORT, function () {
     console.log("Server running on port " + PORT);

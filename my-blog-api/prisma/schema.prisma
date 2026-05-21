@@ -7,13 +7,17 @@ datasource db {
 }
 
 model Article {
-  id          String    @id @default(uuid())
+  id          String  @id @default(uuid())
   title       String
   description String
   poster      String? // untuk nampung URL dari cloudinary
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  deletedAt   DateTime?
+
+  isPublished Boolean   @default(false) // untuk memberi tanda apakah artikel sudah dikirim oleh scheduler atau belum
+  publishedAt DateTime? // untuk memberi tanda kapan artikel dikirim
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
 }
 
 model User {

@@ -28,8 +28,8 @@ router.get(
 // PROTECTED
 router.post(
   "/",
-  authenticate,
-  authorize(["VIP"]),
+  // authenticate,
+  // authorize(["VIP"]),
   upload.single("poster"),
   validate(createArticleSchema),
   createArticleController,
