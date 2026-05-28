@@ -11,7 +11,7 @@ import { startArticleScheduler } from "./utils/scheduler/article.scheduler";
 
 dotenv.config();
 
-function createApp() {
+export function createApp() {
   const app = express();
 
   app.use(cors());
@@ -35,7 +35,7 @@ function startServer() {
   const app = createApp();
   const PORT = process.env.PORT || 5000;
 
-  startArticleScheduler()
+  // startArticleScheduler()
 
   app.listen(PORT, function () {
     console.log("Server running on port " + PORT);
