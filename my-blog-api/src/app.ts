@@ -11,7 +11,7 @@ import { startArticleScheduler } from "./utils/scheduler/article.scheduler";
 
 dotenv.config();
 
-export function createApp() {
+export default function createApp() {
   const app = express();
 
   app.use(cors());
@@ -43,4 +43,4 @@ function startServer() {
   });
 }
 
-// startServer();
+startServer();

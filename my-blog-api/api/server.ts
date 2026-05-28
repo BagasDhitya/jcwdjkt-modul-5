@@ -1,4 +1,4 @@
-import {createApp} from "../src/app"
-const app = createApp();
+import startApp from "../src/app"
+const app = startApp();
 
 export default app
