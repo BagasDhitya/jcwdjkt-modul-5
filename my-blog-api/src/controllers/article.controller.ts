@@ -7,10 +7,11 @@ import {
   updateArticle,
   deleteArticle,
 } from "../services/article.service";
+import { sanitizeString, sanitizeId } from "../helpers/sanitize";
 
 export async function articlePublishWebhook(req: Request, res: Response, next: NextFunction) {
   try {
-    const { articleId } = req.body;
+    const articleId = sanitizeId(req.body.articleId)
 
     if (!articleId) {
       return res.status(400).json({ error: "Missing articleId" });
@@ -41,9 +42,14 @@ export async function createArticleController(
     // 1. Ambil data mentah dari body
     const { title, description, publishedAt } = req.body;
 
+    // Sanitize : pastikan title dan description sudah bersih
+    const cleanTitle = sanitizeString(title)
+    const cleanDescription = sanitizeString(description)
+    let cleanPublishedAt = sanitizeString(publishedAt)
+
     // 2. Bersihkan nilai publishedAt dari form-data Postman
     // Jika tidak diisi, berupa string kosong "", atau string "undefined"/"null", kita set jadi undefined
-    const cleanPublishedAt = 
+     cleanPublishedAt = 
       publishedAt && 
       publishedAt.trim() !== "" && 
       publishedAt !== "undefined" && 
@@ -51,13 +57,13 @@ export async function createArticleController(
         ? publishedAt 
         : undefined;
 
-        console.log(title, description, publishedAt)
+        console.log(cleanTitle, cleanDescription, cleanPublishedAt)
 
     // 3. Lempar data yang sudah bersih ke fungsi createArticle
     const result = await createArticle(
       {
-        title,
-        description,
+        title: cleanTitle,
+        description: cleanDescription,
         publishedAt: cleanPublishedAt,
       },
       req.file!
@@ -88,7 +94,10 @@ export async function getArticleByIdController(
   next: NextFunction,
 ) {
   try {
-    const result = await getArticleById(String(req.params.id));
+
+    // sanitize id
+    const articleId = sanitizeId(String(req.params.id))
+    const result = await getArticleById(articleId);
     res.json(result);
   } catch (error) {
     next(error);
@@ -101,7 +110,13 @@ export async function updateArticleController(
   next: NextFunction,
 ) {
   try {
-    const result = await updateArticle(String(req.params.id), req.body);
+    const {title, description} = req.body
+    // sanitize id
+    const articleId = sanitizeId(String(req.params.id))
+    const cleanTitle = sanitizeString(title)
+    const cleanDescription = sanitizeString(description)
+
+    const result = await updateArticle(articleId, {title: cleanTitle, description: cleanDescription});
     res.json(result);
   } catch (error) {
     next(error);
@@ -114,7 +129,11 @@ export async function deleteArticleController(
   next: NextFunction,
 ) {
   try {
-    const result = await deleteArticle(String(req.params.id));
+
+        // sanitize id
+    const articleId = sanitizeId(String(req.params.id))
+
+    const result = await deleteArticle(articleId);
     res.json(result);
   } catch (error) {
     next(error);

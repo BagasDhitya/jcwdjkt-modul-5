@@ -23,6 +23,20 @@ services:
     networks:
       - blog-network
 
+  # === tambahkan owasp zap di akhir === #
+  owasp-zap:
+    image: ghcr.io/zaproxy/zaproxy:stable
+    container_name: owasp-zap
+    volumes:
+      - ./zap-reports:/zap/wrk:rw
+    command: zap-baseline.py -t http://my-blog:3000 -r report.html
+    depends_on:
+      - my-blog
+    networks:
+      - blog-network
+    profiles:
+      - dast-scan
+
 networks:
   blog-network:
     driver: bridge
