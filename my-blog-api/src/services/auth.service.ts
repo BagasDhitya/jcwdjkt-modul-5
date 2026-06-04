@@ -4,6 +4,7 @@ import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { Auth } from "../types/auth";
 import { sendWelcomeEmail } from "./email.service";
+import axios from "axios";
 
 dotenv.config();
 const JWT_SECRET = process.env.JWT_SECRET || "secret";
@@ -52,4 +53,17 @@ export async function loginUser(data: Auth) {
   const role = user.role;
 
   return { token, role };
+}
+
+export async function getExternalUser(id: number) {
+  try {
+    const response = await axios.get(
+      `https://jsonplaceholder.typicode.com/users/${id}`,
+    );
+    return response.data;
+  } catch (error: any) {
+    if (error.response && error.response.status === 404) {
+      throw new Error("User eksternal tidak ditemukan");
+    }
+  }
 }

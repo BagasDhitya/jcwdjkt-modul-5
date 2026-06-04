@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { registerUser, loginUser } from "../services/auth.service";
+import { getExternalUser } from "../services/auth.service";
 
 export async function registerController(req: Request, res: Response) {
   try {
@@ -23,6 +24,19 @@ export async function loginController(req: Request, res: Response) {
   } catch (error) {
     res.status(500).send({
       message: "Login failed",
+    });
+  }
+}
+
+export async function externalUserController(req: Request, res: Response) {
+  try {
+    const result = await getExternalUser();
+    res.status(201).send({
+      data: result,
+    });
+  } catch (error) {
+    res.status(500).send({
+      message: "Failed get external user",
     });
   }
 }

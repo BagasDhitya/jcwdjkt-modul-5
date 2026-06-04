@@ -1,13 +1,13 @@
 import prisma from "../lib/prisma";
 import { uploadToCloudinary } from "./upload.service";
 import redis from "../lib/redis";
-import dotenv from "dotenv"
+import dotenv from "dotenv";
 import { qstash } from "../lib/queue";
 
 import { AppError } from "../utils/error";
 import { handlePrismaError } from "../utils/handlePrisma";
 
-dotenv.config()
+dotenv.config();
 
 export async function createArticle(
   data: {
@@ -27,11 +27,11 @@ export async function createArticle(
 
     if (data.publishedAt) {
       const dateStr = data.publishedAt.toString();
-      
+
       // Jika frontend mengirim tanpa info timezone (misal: "2026-05-21 19:46:00")
       // Kita paksa tempelkan '+07:00' agar JavaScript tahu ini adalah Waktu Indonesia Barat
-      if (!dateStr.includes('+') && !dateStr.endsWith('Z')) {
-        publishDate = new Date(`${dateStr.replace('T', ' ')} +07:00`);
+      if (!dateStr.includes("+") && !dateStr.endsWith("Z")) {
+        publishDate = new Date(`${dateStr.replace("T", " ")} +07:00`);
       } else {
         publishDate = new Date(dateStr);
       }
@@ -40,29 +40,31 @@ export async function createArticle(
     // Bandingkan waktu rilis dengan waktu lokal sekarang
     const isPublished = !publishDate || publishDate <= new Date();
 
-    const newArticle =  await prisma.article.create({
+    const newArticle = await prisma.article.create({
       data: {
         title: data.title,
         description: data.description,
         poster: posterUrl,
         publishedAt: publishDate,
-        isPublished: isPublished
+        isPublished: isPublished,
       },
     });
 
-    if(!isPublished && publishDate ){
-      const now = Date.now()
-      const targetDate =  publishDate.getTime()
+    if (!isPublished && publishDate) {
+      const now = Date.now();
+      const targetDate = publishDate.getTime();
 
-      const delayInSeconds = Math.max(0, Math.floor((targetDate - now) / 1000))
+      const delayInSeconds = Math.max(0, Math.floor((targetDate - now) / 1000));
 
       await qstash.publishJSON({
         url: `${process.env.BACKEND_URL}/api/articles/webhook-publish`, // URL backend kamu yang akan ditembak QStash
         body: { articleId: newArticle.id }, // Kirim ID artikel saja sebagai payload
         delay: delayInSeconds, // QStash akan menahan pesan ini selama sekian detik
       });
-      
-      console.log(`[QStash] Artikel dijadwalkan sukses. Delay: ${delayInSeconds} detik.`);
+
+      console.log(
+        `[QStash] Artikel dijadwalkan sukses. Delay: ${delayInSeconds} detik.`,
+      );
     }
   } catch (error) {
     handlePrismaError(error);
