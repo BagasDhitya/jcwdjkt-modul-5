@@ -1,0 +1,56 @@
+<div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #0f172a; border: 1px solid #1e293b; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+  
+  <div style="padding: 24px; text-align: center; border-bottom: 1px solid #1e293b; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);">
+    <div style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">
+      GitHub Actions Build Status
+    </div>
+    <div style="display: inline-block; padding: 6px 16px; font-size: 14px; font-weight: bold; border-radius: 20px; text-transform: uppercase; background-color: #1e293b; color: $STATUS_COLOR; border: 1px solid $BORDER_COLOR;">
+      $JOB_STATUS
+    </div>
+  </div>
+
+  <div style="padding: 24px; background-color: #0f172a;">
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
+      
+      <tr>
+        <td style="padding: 10px 0; font-size: 14px; color: #94a3b8; width: 30%; vertical-align: top; font-weight: 500;">Project</td>
+        <td style="padding: 10px 0; font-size: 14px; color: #f1f5f9; font-weight: 600; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;">
+          $REPO_NAME
+        </td>
+      </tr>
+      
+      <tr>
+        <td style="padding: 10px 0; font-size: 14px; color: #94a3b8; vertical-align: top; font-weight: 500;">Branch</td>
+        <td style="padding: 10px 0; font-size: 14px; color: #38bdf8; font-weight: 600; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;">
+          $BRANCH_NAME
+        </td>
+      </tr>
+      
+      <tr>
+        <td style="padding: 10px 0; font-size: 14px; color: #94a3b8; vertical-align: top; font-weight: 500;">Triggered By</td>
+        <td style="padding: 10px 0; font-size: 14px; color: #e2e8f0; font-weight: 500;">
+          @$ACTOR_NAME
+        </td>
+      </tr>
+      
+      <tr>
+        <td style="padding: 10px 0; font-size: 14px; color: #94a3b8; vertical-align: top; font-weight: 500;">Commit</td>
+        <td style="padding: 10px 0; font-size: 14px; color: #cbd5e1; line-height: 1.5; background-color: #1e293b; padding: 10px; border-radius: 6px; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; word-break: break-word;">
+          $COMMIT_MESSAGE
+        </td>
+      </tr>
+      
+    </table>
+
+    <div style="text-align: center; margin-top: 28px; margin-bottom: 8px;">
+      <a href="$RUN_URL" 
+         style="display: inline-block; background-color: #004d3f; color: #ffffff; text-decoration: none; padding: 12px 24px; font-size: 14px; font-weight: 600; border-radius: 6px; border: 1px solid #105853;">
+        Lihat Workflow Run
+      </a>
+    </div>
+  </div>
+
+  <div style="padding: 16px; background-color: #1e293b; text-align: center; font-size: 12px; color: #64748b; border-top: 1px solid #334155;">
+    Automated notification via GitHub Actions
+  </div>
+</div>
