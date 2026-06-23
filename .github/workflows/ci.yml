@@ -60,6 +60,18 @@ jobs:
                }' \
                "${{ secrets.DISCORD_WEBHOOK }}"
 
+      - name: Set Email Colors
+        if: always()
+        id: set_colors
+        run: |
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "STATUS_COLOR=#34d399" >> $GITHUB_ENV
+            echo "BORDER_COLOR=#059669" >> $GITHUB_ENV
+          else
+            echo "STATUS_COLOR=#f87171" >> $GITHUB_ENV
+            echo "BORDER_COLOR=#dc2626" >> $GITHUB_ENV
+          fi
+
       - name: Send Email Notification
         uses: dawidd6/action-send-mail@v3
         if: always()
@@ -79,7 +91,7 @@ jobs:
                 <div style="font-size: 14px; text-transform: uppercase; letter-spacing: 0.1em; color: #94a3b8; margin-bottom: 8px; font-weight: 600;">
                   GitHub Actions Build Status
                 </div>
-                <div style="display: inline-block; padding: 6px 16px; font-size: 14px; font-weight: bold; border-radius: 20px; text-transform: uppercase; background-color: #1e293b; color: ${{ job.status == 'success' && '#34d399' || '#f87171' }}; border: 1px solid ${{ job.status == 'success' && '#059669' || '#dc2626' }};">
+                <div style="display: inline-block; padding: 6px 16px; font-size: 14px; font-weight: bold; border-radius: 20px; text-transform: uppercase; background-color: #1e293b; color: ${{ env.STATUS_COLOR }}; border: 1px solid ${{ env.BORDER_COLOR }};">
                   ${{ job.status }}
                 </div>
               </div>
