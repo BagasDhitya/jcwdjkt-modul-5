@@ -36,4 +36,4 @@ jobs:
       - name: Run Tests
         run: |
           cd my-blog-api
-          npm run test
+          npx jest --config jest.config.ts
