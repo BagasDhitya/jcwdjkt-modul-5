@@ -59,3 +59,25 @@ jobs:
                  }]
                }' \
                "${{ secrets.DISCORD_WEBHOOK }}"
+
+      - name: Send Email Notification
+        uses: dawidd6/action-send-mail@v3
+        if: always()
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.SMTP_USER }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: "[Github Actions] ${{ github.repository }} - Build ${{ job.status }}"
+          to: ${{ secrets.NOTIF_EMAIL_RECEIVER }}
+          from: Github Actions Runner <${{ secrets.SMTP_USER }}>
+          body: |
+            GitHub Actions Build Status: ${{ job.status }}
+
+            Project   : ${{ github.repository }}
+            Branch    : ${{ github.ref_name }}
+            Commit    : ${{ github.event.head_commit.message }}
+            Triggered By : ${{ github.actor }}
+
+            Link ke Workflow Run:
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
