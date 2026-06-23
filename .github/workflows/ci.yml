@@ -1,0 +1,39 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [25.5.0]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{matrix.node-version}}
+          cache: "npm"
+          cache-dependency-path: my-blog-api/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd my-blog-api
+          npm ci
+
+      - name: Generate Prisma Client
+        run: |
+          cd my-blog-api
+          npx prisma generate
+
+      - name: Run Tests
+        run: |
+          cd my-blog-api
+          npm run test
