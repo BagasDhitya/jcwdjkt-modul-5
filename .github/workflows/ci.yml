@@ -39,10 +39,10 @@ jobs:
           npx jest --config jest.config.ts
 
       - name: Discord Notification
-        uses: illo78/discord-webhook-action@v2.1.2
+        uses: sandro-g/discord-webhook-action@v2
         if: always()
         with:
           webhook-url: ${{secrets.DISCORD_WEBHOOK}}
           title: "CI Pipeline Build Status"
           description: "Repository; ${{ github.repository }} \nCommit: ${{ github.event.head_commit.message }} \nAuthor: ${{ github.actor }}"
-          color: ${{ job.status == 'success' && 0x28a745 || 0xdc3545 }}
+          color: ${{ job.status == 'success' && '#28a745' || '#dc3545' }}
