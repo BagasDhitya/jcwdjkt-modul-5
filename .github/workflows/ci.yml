@@ -39,10 +39,23 @@ jobs:
           npx jest --config jest.config.ts
 
       - name: Discord Notification
-        uses: sandro-g/discord-webhook-action@v2
         if: always()
-        with:
-          webhook-url: ${{secrets.DISCORD_WEBHOOK}}
-          title: "CI Pipeline Build Status"
-          description: "Repository; ${{ github.repository }} \nCommit: ${{ github.event.head_commit.message }} \nAuthor: ${{ github.actor }}"
-          color: ${{ job.status == 'success' && '#28a745' || '#dc3545' }}
+        run: |
+          # Tentukan warna berdasarkan status job (Green untuk sukses, Red untuk gagal)
+          if [ "${{ job.status }}" = "success" ]; then
+            COLOR=2664261  # Desimal dari #28A745
+          else
+            COLOR=14431557 # Desimal dari #DC3545
+          fi
+
+          # Kirim payload JSON ke Discord menggunakan cURL
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d '{
+                 "embeds": [{
+                   "title": "CI Pipeline Build Status",
+                   "description": "Repository: ${{ github.repository }}\nCommit: ${{ github.event.head_commit.message }}\nAuthor: ${{ github.actor }}",
+                   "color": '$COLOR'
+                 }]
+               }' \
+               "${{ secrets.DISCORD_WEBHOOK }}"
